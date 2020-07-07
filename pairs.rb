@@ -1,7 +1,7 @@
 # https://www.hackerrank.com/challenges/pairs/problem
 
 # TWO POINTER
-def pairs_archived(k, arr)
+def pairs(k, arr)
   arr = arr.sort
   count = 0
   l = 0
