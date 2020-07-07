@@ -1,26 +1,24 @@
 def init(s)
-  @str = s
   n = s.length
   @mod = 1000000007
-  @fact_cache = [1]
-  uniq_chars = 4
-  csum = Array.new(uniq_chars){Array.new(n + 1)}
-  uniq_chars.times{|idx| csum[idx][0] = 0}
+  uniq_chars = 26
+  @csum = Array.new(uniq_chars){Array.new(n + 1)}
+  uniq_chars.times{|idx| @csum[idx][0] = 0}
   1.upto(n) do |i|
-    id = @str[i-1].ord - 97
-    0.upto(uniq_chars-1){|j| csum[j][i] = csum[j][i-1]}
-    csum[id][i] = csum[id][i-1] + 1
+    id = s[i-1].ord - 97
+    0.upto(uniq_chars-1){|j| @csum[j][i] = @csum[j][i-1]}
+    @csum[id][i] = @csum[id][i-1] + 1
   end
-  require 'pry'; binding.pry
+  @fact_cache = [1]
   1.upto(100000){ |i| @fact_cache[i] = (i * @fact_cache[i-1]) % @mod }
 end
 
-init('abcdaabca')
-
 def answerQuery(l, r)
   # Return the answer for this query modulo 1000000007.
-  heuristics = {}
-  heuristics = @str_chars[(l-1)...r].group_by(&:itself).transform_values!(&:size).to_a
+  heuristics = []
+  @csum.each_with_index do |int_char, idx|
+    heuristics << [idx, int_char[r] - int_char[l-1]]
+  end
   return 1 if heuristics.size == 1
   total_odds = heuristics.count{|c| c[1]%2 == 1} # No need to sum here, just one is enough
   even_arrays = heuristics.map{|c| c[1]/2}
@@ -68,8 +66,9 @@ end
 
 inputs.each_with_index do |input, i|
   result = answerQuery(input[0], input[1])
-  puts i
-  if result != outputs[i]
+  # puts i
+  if result == outputs[i]
+    puts 'PASS'
     # if @str[((input[0]-1)...input[1])] == 'yqpqyqq'
       # puts "Output came: #{result}"
       # puts "#{@str[((input[0]-1)...input[1])]} #{input} #{outputs[i]}"
